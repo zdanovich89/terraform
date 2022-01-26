@@ -16,12 +16,12 @@ variable "prod-nsure-blazor-appservice-name"{
 
 variable "prod-nsure-keyvault-name"{
   type = string
-  default = "prod-nsure-keyvault"
+  default = "prodnsurekeyvault"
 }
 
 variable "prod-nsure-frontendapi-name" {
   type = string
-  default = "dev-nsure-frontendapi"
+  default = "prod-nsure-frontend-api"
 }
 
 variable "subscription_id" {

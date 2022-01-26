@@ -12,11 +12,10 @@ resource "azurerm_app_service" "nsure-dev" {
     }
     always_on = true
     websockets_enabled = true
-    
   }
-    app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.blazor-application-insights.instrumentation_key
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.blazor-application-insights.connection_string
-    }
+  app_settings = {
+  "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.blazor-application-insights.instrumentation_key
+  "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.blazor-application-insights.connection_string
+  }
  
 }
