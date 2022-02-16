@@ -1,6 +1,6 @@
 variable "resource_group_name" {
   type = string
-  default = "dev-nsure-frontend"
+  default = "dev-nsure-marketing"
 }
 
 variable "resource_group_location" {
