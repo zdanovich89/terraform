@@ -1,0 +1,676 @@
+resource "azurerm_resource_group" "rg-nsuredev-dev-01" {
+         name = var.resource_group_name
+         location = var.location
+}
+
+resource "azurerm_storage_account" "st-finturo-dev-nsure-01" {
+         name = "stfinturodevnsure01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         account_tier = "Standard"
+         account_kind = "Storage"
+         account_replication_type = "LRS"
+         enable_https_traffic_only = true
+tags = {
+         "ms-resource-usage"="azure-cloud-shell"
+}
+}
+
+resource "azurerm_log_analytics_workspace" "workspace-finturo-dev-nsure-01" {
+         name = "workspace-finturo-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         sku =   "PerGB2018"
+         retention_in_days = "30"
+tags = {
+}
+}
+
+resource "azurerm_application_insights" "appi-finturo-dev-nsure-01" {
+  name                = "appi-finturo-dev-nsure-01"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  workspace_id        = azurerm_log_analytics_workspace.workspace-finturo-dev-nsure-01.id
+  application_type    = "web"
+}
+
+
+resource "azurerm_sql_server" "sql-finturo-main-dev-nsure-01" {
+         name = "sql-finturo-main-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         version = "12.0"
+         administrator_login= "nsure"
+         administrator_login_password= ""
+tags = {
+}
+}
+
+resource "azurerm_sql_database" "sgldb-finturo-main-dev-nsure-01" {
+         name = "sgldb-finturo-main-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         server_name = "sql-finturo-main-dev-nsure-01"
+         collation= "SQL_Latin1_General_CP1_CI_AS"
+         edition= "Standard"
+         requested_service_objective_name= "S0"
+         create_mode= "Default"
+tags = {
+}
+}
+
+
+resource "azurerm_sql_database" "sgldb-finturo-master-dev-nsure-01" {
+         name = "sgldb-finturo-master-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         server_name = "sql-finturo-main-dev-nsure-01"
+}
+
+
+resource "azurerm_cosmosdb_account" "cosmos-finturo-dev-nsure-01" {
+         name = "cosmos-finturo-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         kind = "GlobalDocumentDB"
+         offer_type = "Standard"
+         consistency_policy {
+                  consistency_level = "Session"
+                  max_interval_in_seconds = "5"
+                  max_staleness_prefix = "100"
+         }
+         enable_automatic_failover = false
+         geo_location {
+         location = var.location
+         failover_priority  = "0"
+        }
+        tags = {
+         "defaultExperience"="DocumentDB"
+        }
+}
+
+resource "azurerm_cosmosdb_account" "cosmos-finturo-analytic-dev-nsure-01" {
+         name = "cosmos-finturo-analytic-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         kind = "GlobalDocumentDB"
+         offer_type = "Standard"
+         consistency_policy {
+                  consistency_level = "Session"
+                  max_interval_in_seconds = "5"
+                  max_staleness_prefix = "100"
+         }
+         enable_automatic_failover = false
+         geo_location {
+         location = var.location
+         failover_priority  = "0"
+}
+tags = {
+         "defaultExperience"="Core (SQL)"
+         "hidden-cosmos-mmspecial"=""
+}
+}
+
+resource "azurerm_app_service_plan" "plan-finturo-main-dev-nsure-01" {
+         name = "plan-finturo-main-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         kind = "app"
+         sku {
+                 tier = "Basic"
+                 size = "B2"
+         }
+} 
+
+resource "azurerm_app_service" "app_services_with_appi" {
+
+        for_each = var.app_services_with_appi
+
+         name = each.value.name
+         location = var.location
+         resource_group_name = var.resource_group_name
+         https_only = each.value.https_only
+         app_service_plan_id = azurerm_app_service_plan.plan-finturo-main-dev-nsure-01.id
+         app_settings = {
+          APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-dev-nsure-01.instrumentation_key
+          APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-dev-nsure-01.connection_string         
+           }
+
+}
+resource "azurerm_app_service" "app_services_withput_appi" {
+
+        for_each = var.app_services_without_appi
+
+         name = each.value.name
+         location = var.location
+         resource_group_name = var.resource_group_name
+         https_only = each.value.https_only
+         app_service_plan_id = azurerm_app_service_plan.plan-finturo-main-dev-nsure-01.id
+         app_settings = {
+         }
+
+}
+
+resource "azurerm_function_app" "function_apps" {
+        for_each = var.function_apps
+        name=each.value.name
+        location = var.location
+        resource_group_name = var.resource_group_name
+        app_service_plan_id = azurerm_app_service_plan.plan-finturo-main-dev-nsure-01.id
+        https_only = each.value.https_only
+        storage_account_name  = azurerm_storage_account.st-finturo-dev-nsure-01.name
+        storage_account_access_key = azurerm_storage_account.st-finturo-dev-nsure-01.primary_access_key
+        enable_builtin_logging = each.value.enable_builtin_logging
+        app_settings = {
+          APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-dev-nsure-01.instrumentation_key
+          APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-dev-nsure-01.connection_string         
+        }
+}
+
+resource "azurerm_servicebus_namespace" "nsure-dev-service-bus" {
+         name = "sb-finturo-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         sku = "Basic"
+tags = {
+}
+}
+
+resource "azurerm_container_group" "cg-finturo-main-dev-nsure-01" {
+  name                = "cg-finturo-main-dev-nsure-01"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+
+  container {
+    name   = "sftp-container"
+    image  = "atmoz/sftp:latest"
+    cpu    = "1"
+    memory = "1.5"
+    environment_variables = { "SFTP_USERS" = ""}
+    volume {
+      name = "sftvolume1"
+      mount_path = "/home/quinstreet/upload"
+      share_name = "quinstreetfileshare"
+      read_only = false
+      storage_account_name = azurerm_storage_account.st-finturo-dev-nsure-01.name
+    }
+    volume {
+      name = "sftvolume2"
+      mount_path = "/home/everquote/upload"
+      share_name = "everquotefileshare"
+      read_only = false
+      storage_account_name = azurerm_storage_account.st-finturo-dev-nsure-01.name
+    }
+    volume {
+      name = "sftvolume3"
+      mount_path = "/home/smartfinancial/upload"
+      share_name = "smartfinancialfileshare"
+      read_only = false
+      storage_account_name = azurerm_storage_account.st-finturo-dev-nsure-01.name
+    }
+
+    ports {
+      port     = 22
+      protocol = "TCP"
+    }
+  }
+  tags = {
+    
+  }
+}
+
+
+resource "azurerm_servicebus_queue" "sb_queues" {
+
+        for_each = var.sb_queues
+
+
+         name = each.value.name
+         namespace_id = azurerm_servicebus_namespace.nsure-dev-service-bus.id
+         enable_partitioning =  each.value.enable_partitioning
+         enable_express =  each.value.enable_express
+         requires_duplicate_detection = each.value.requires_duplicate_detection
+         requires_session =  each.value.requires_session
+         dead_lettering_on_message_expiration = each.value.dead_lettering_on_message_expiration
+}
+
+resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
+         name = "kv-finturo-dev-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         sku_name="standard"
+         tenant_id=var.tenant_id
+         enabled_for_deployment=false
+         enabled_for_disk_encryption=false
+         enabled_for_template_deployment=false
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-background-dev-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-sendgrid-dev-nsure-01"].id
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="e2da873d-083d-4f52-b1fd-24305b66ba76"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="255a8c72-069f-4214-8f45-3b79a164f278"
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="8bbc8d72-787e-4a44-b97f-93c52d4ab019"
+                 key_permissions = [
+                         "List",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                         "Get",
+                         "List",
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["app-finturo-virtualentityapi-dev-nsure-01"].id
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["app-finturo-crmfileapi-dev-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="57ada566-c017-43b4-8466-4481e5134cf8"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="c5a149fe-1878-4abe-9a6e-10610b0f4d88"
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-crm-dev-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["app-finturo-insurancemicroservice-dev-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["app-finturo-devapi-dev-nsure-01"].id
+                 key_permissions = [
+                         "UnwrapKey",
+                         "WrapKey",
+                         "Get",
+                         "List",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="0d40cd95-3a9f-4915-8f48-86fa5c6302dd"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "WrapKey",
+                         "UnwrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="34838a61-6834-4cd4-9700-93e03e63ad29"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "Update",
+                         "Create",
+                         "Import",
+                         "Delete",
+                         "Recover",
+                         "Backup",
+                         "Restore",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                         "Set",
+                         "Delete",
+                         "Recover",
+                         "Backup",
+                         "Restore",
+                 ]
+                 certificate_permissions = [
+                         "Get",
+                         "List",
+                         "Update",
+                         "Create",
+                         "Import",
+                         "Delete",
+                         "Recover",
+                         "Backup",
+                         "Restore",
+                         "ManageContacts",
+                         "ManageIssuers",
+                         "GetIssuers",
+                         "ListIssuers",
+                         "SetIssuers",
+                         "DeleteIssuers",
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="76172d74-08dd-4261-aa0e-885a74c0cea9"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="f8528d70-799d-4289-8d3d-c57e8ee82917"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="8b5e5c17-26bc-4c4c-8782-1107201bbb21"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                         "Set",
+                         "Delete",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-quotation-dev-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="a468e1b1-cf54-499a-8af7-a538fbdef959"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="3e236511-a318-43e9-9949-b89ce363ca74"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List"
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="9bb39dbc-4571-462c-bbc5-5d8b782df6e1"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey"
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List"
+                 ]
+                 certificate_permissions = [
+                         "Get",
+                         "List"
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="edee2f5d-7463-4aca-a119-b00a13c8526b"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey"
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List"
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="321b5691-ebbb-47fe-8bb3-94c524558f19"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey"
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List"
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+tags = {
+}
+}
+
+
+resource azurerm_monitor_autoscale_setting nsure-dev__nsure-dev-service-plan-Autoscale-539 {
+name = "nsure-dev-service-plan-Autoscale-539"
+location = var.location
+resource_group_name = var.resource_group_name
+enabled = false
+target_resource_id = azurerm_app_service_plan.plan-finturo-main-dev-nsure-01.id
+profile {
+        name =  "Auto created scale condition"
+        capacity {
+                default = "1"
+                minimum = "1"
+                maximum = "1"
+        }
+        rule  {
+                metric_trigger {
+                        metric_name = "CpuPercentage"
+                        metric_resource_id = azurerm_app_service_plan.plan-finturo-main-dev-nsure-01.id
+                        operator = "GreaterThan"
+                        statistic= "Average"
+                        threshold = "90.0"
+                        time_aggregation = "Average"
+                        time_grain = "PT1M"
+                        time_window = "PT10M"
+                }
+                scale_action  {
+                        cooldown = "PT10M"
+                        direction = "Increase"
+                        type = "ChangeCount"
+                        value = "1"
+                }
+        }
+}
+notification {
+        email {
+                send_to_subscription_administrator = false
+                send_to_subscription_co_administrator =  false
+                custom_emails =   ["krprus@netwise.pl"]
+        }
+}
+tags = {
+}
+}
+

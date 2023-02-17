@@ -1,0 +1,524 @@
+resource "azurerm_resource_group" "rg-nsure-dev-01" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
+resource "azurerm_storage_account" "st-finturo-tst-nsure-01" {
+         name = "stfinturotstnsure01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         account_tier = "Standard"
+         account_kind = "Storage"
+         account_replication_type = "LRS"
+         enable_https_traffic_only = true
+tags = {
+         "ms-resource-usage"="azure-cloud-shell"
+}
+}
+
+resource "azurerm_application_insights" "appi-finturo-tst-nsure-01" {
+  name                = "appi-finturo-tst-nsure-01"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  application_type    = "web"
+}
+
+resource "azurerm_sql_server" "sql-finturo-nsure-tst-nsure-01" {
+         name = "sql-finturo-nsure-tst-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         version = "12.0"
+         administrator_login= "admin-test"
+         administrator_login_password= ""
+tags = {
+}
+}
+
+resource "azurerm_sql_database" "sqldb-finturo-nasuremaster-tst-nsure-01" {
+         name = "sqldb-finturo-nasuremaster-tst-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         server_name = azurerm_sql_server.sql-finturo-nsure-tst-nsure-01.name
+}
+
+resource "azurerm_sql_database" "sqldb-finturo-nsuremain-tst-nsure-01" {
+         name = "sqldb-finturo-nsuremain-tst-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         server_name = azurerm_sql_server.sql-finturo-nsure-tst-nsure-01.name
+         collation= "SQL_Latin1_General_CP1_CI_AS"
+         edition= "Standard"
+         requested_service_objective_name= "S0"
+         create_mode= "Default"
+tags = {
+}
+}
+
+resource "azurerm_cosmosdb_account" "cosmos-finturo-tst-nsure-01" {
+         name = "cosmos-finturo-tst-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         kind = "GlobalDocumentDB"
+         offer_type = "Standard"
+         consistency_policy {
+                  consistency_level = "Session"
+                  max_interval_in_seconds = "5"
+                  max_staleness_prefix = "100"
+         }
+         enable_automatic_failover = false
+         geo_location {
+         location = "East US"
+         failover_priority  = "0"
+}
+tags = {
+         "defaultExperience"="DocumentDB"
+}
+}
+
+resource "azurerm_cosmosdb_account" "cosmos-finturo-analytic-tst-nsure-01" {
+         name = "cosmos-finturo-analytic-tst-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         kind = "GlobalDocumentDB"
+         offer_type = "Standard"
+         consistency_policy {
+                  consistency_level = "Session"
+                  max_interval_in_seconds = "5"
+                  max_staleness_prefix = "100"
+         }
+         enable_automatic_failover = false
+         geo_location {
+         location = "East US"
+         failover_priority  = "0"
+}
+tags = {
+         "defaultExperience"="Core (SQL)"
+         "hidden-cosmos-mmspecial"=""
+}
+}
+
+resource "azurerm_app_service" "app_services_with_appi" {
+
+        for_each = var.app_services_with_appi
+
+         name = each.value.name
+         location = var.location
+         resource_group_name = var.resource_group_name
+         https_only = each.value.https_only
+         app_service_plan_id = var.app_service_plan_id_spfinturo_tst
+         app_settings = {
+          APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-tst-nsure-01.instrumentation_key
+          APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string          }
+
+}
+resource "azurerm_app_service" "app_services_withput_appi" {
+
+        for_each = var.app_services_without_appi
+
+         name = each.value.name
+         location = var.location
+         resource_group_name = var.resource_group_name
+         https_only = each.value.https_only
+         app_service_plan_id = var.app_service_plan_id_spfinturo_tst
+         app_settings = {
+         }
+
+}
+
+resource "azurerm_function_app" "function_apps" {
+        for_each = var.function_apps
+        name=each.value.name
+        location = var.location
+        resource_group_name = var.resource_group_name
+        app_service_plan_id = var.app_service_plan_id_spfinturo_tst
+        https_only = each.value.https_only
+        storage_account_name  = azurerm_storage_account.st-finturo-tst-nsure-01.name
+        storage_account_access_key = azurerm_storage_account.st-finturo-tst-nsure-01.primary_access_key
+        enable_builtin_logging = each.value.enable_builtin_logging
+        app_settings = {
+          APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-tst-nsure-01.instrumentation_key
+          APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string         
+        }
+}
+
+resource "azurerm_servicebus_namespace" "sb-finturo-tst-nsure-01" {
+         name = "sb-finturo-tst-nsure-01"
+         location = var.location
+         resource_group_name = var.resource_group_name
+         sku = "Basic"
+tags = {
+}
+}
+
+resource "azurerm_servicebus_queue" "sb_queues" {
+
+        for_each = var.sb_queues
+
+
+         name = each.value.name
+         namespace_id = azurerm_servicebus_namespace.sb-finturo-tst-nsure-01.id
+         enable_partitioning =  each.value.enable_partitioning
+         enable_express =  each.value.enable_express
+         requires_duplicate_detection = each.value.requires_duplicate_detection
+         requires_session =  each.value.requires_session
+         dead_lettering_on_message_expiration = each.value.dead_lettering_on_message_expiration
+}
+
+resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
+  name                = "cg-finturo-main-tst-nsure-01"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+
+  container {
+    name   = "sftp-container"
+    image  = "atmoz/sftp:latest"
+    cpu    = "1"
+    memory = "1.5"
+    environment_variables = { "SFTP_USERS" = ""}
+    volume {
+      name = "sftvolume1"
+      mount_path = "/home/quinstreet/upload"
+      share_name = "quinstreetfileshare"
+      read_only = false
+      storage_account_name = azurerm_storage_account.st-finturo-tst-nsure-01.name
+    }
+    volume {
+      name = "sftvolume2"
+      mount_path = "/home/everquote/upload"
+      share_name = "everquotefileshare"
+      read_only = false
+      storage_account_name = azurerm_storage_account.st-finturo-tst-nsure-01.name
+    }
+    volume {
+      name = "sftvolume3"
+      mount_path = "/home/smartfinancial/upload"
+      share_name = "smartfinancialfileshare"
+      read_only = false
+      storage_account_name = azurerm_storage_account.st-finturo-tst-nsure-01.name
+    }
+
+    ports {
+      port     = 22
+      protocol = "TCP"
+    }
+  }
+  tags = {
+    
+  }
+}
+
+
+resource "azurerm_key_vault" "nsure__nsure-keyvault" {
+         name = "kv-finturo-tst-nsure-01"
+         location = "eastus"
+         resource_group_name = "nsure"
+         sku_name="standard"
+         tenant_id=var.tenant_id
+         enabled_for_deployment=false
+         enabled_for_disk_encryption=false
+         enabled_for_template_deployment=false
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-background-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="e273ee49-3ea5-47e0-9d66-0597bb04eba8"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-sendgrid-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="34838a61-6834-4cd4-9700-93e03e63ad29"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "Update",
+                         "Create",
+                         "Import",
+                         "Delete",
+                         "Recover",
+                         "Backup",
+                         "Restore",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                         "Set",
+                         "Delete",
+                         "Recover",
+                         "Backup",
+                         "Restore",
+                 ]
+                 certificate_permissions = [
+                         "Get",
+                         "List",
+                         "Update",
+                         "Create",
+                         "Import",
+                         "Delete",
+                         "Recover",
+                         "Backup",
+                         "Restore",
+                         "ManageContacts",
+                         "ManageIssuers",
+                         "GetIssuers",
+                         "ListIssuers",
+                         "SetIssuers",
+                         "DeleteIssuers",
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="8bbc8d72-787e-4a44-b97f-93c52d4ab019"
+                 key_permissions = [
+                         "List",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                         "Get",
+                         "List",
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_app_service.app_services_without_appi["app-finturo-virtualentityapi-tst-nsure-01"].id
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-notification-tst-nsure-01"].id
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-crmfileapi-tst-nsure-01"].id
+                 key_permissions = [
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-crm-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-insurancemicroservice-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "WrapKey",
+                         "UnwrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_function_apps.function_apps["func-finturo-quotation-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="aee9bb35-cf26-4ad9-9c70-3ec9fe3f531f"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="4eb85c27-dd37-4a2b-a918-6af6bc7093e0"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-nsureapi-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="6d2c02a1-eecd-45b3-90a6-effeecf72f44"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-messengermicroservice-tst-nsure-01"].id
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="8b5e5c17-26bc-4c4c-8782-1107201bbb21"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                         "Set",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+         access_policy {
+                 tenant_id=var.tenant_id
+                 object_id="24005ec1-7359-4b7a-9cc6-8f4bc0f6dd9f"
+                 key_permissions = [
+                         "Get",
+                         "List",
+                         "UnwrapKey",
+                         "WrapKey",
+                 ]
+                 secret_permissions = [
+                         "Get",
+                         "List",
+                 ]
+                 certificate_permissions = [
+                 ]
+        }
+tags = {
+}
+}
