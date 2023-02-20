@@ -111,7 +111,7 @@ resource "azurerm_app_service" "app_services_with_appi" {
           APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string          }
 
 }
-resource "azurerm_app_service" "app_services_withput_appi" {
+resource "azurerm_app_service" "app_services_without_appi" {
 
         for_each = var.app_services_without_appi
 
@@ -222,7 +222,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
          enabled_for_template_deployment=false
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-background-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-background-tst-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -254,7 +254,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-sendgrid-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-sendgrid-tst-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -338,7 +338,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-notification-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-notification-tst-nsure-01"].id
                  key_permissions = [
                  ]
                  secret_permissions = [
@@ -362,7 +362,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-crm-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-crm-tst-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -394,7 +394,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-quotation-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-quotation-tst-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",

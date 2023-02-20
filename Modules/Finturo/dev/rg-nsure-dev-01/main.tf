@@ -248,7 +248,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
          enabled_for_template_deployment=false
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-background-dev-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-background-dev-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -264,7 +264,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-sendgrid-dev-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-sendgrid-dev-nsure-01"].id
                  key_permissions = [
                  ]
                  secret_permissions = [
@@ -319,7 +319,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["app-finturo-virtualentityapi-dev-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-virtualentityapi-dev-nsure-01"].id
                  key_permissions = [
                  ]
                  secret_permissions = [
@@ -331,7 +331,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["app-finturo-crmfileapi-dev-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-crmfileapi-dev-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -375,7 +375,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-crm-dev-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-crm-dev-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -391,7 +391,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["app-finturo-insurancemicroservice-dev-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-insurancemicroservice-dev-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",
@@ -407,7 +407,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["app-finturo-devapi-dev-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-devapi-dev-nsure-01"].id
                  key_permissions = [
                          "UnwrapKey",
                          "WrapKey",
@@ -530,7 +530,7 @@ resource "azurerm_key_vault" "kv-finturo-dev-nsure-01" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_apps.function_apps["func-finturo-quotation-dev-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-quotation-dev-nsure-01"].id
                  key_permissions = [
                          "Get",
                          "List",

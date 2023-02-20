@@ -48,7 +48,7 @@ variable "app_services_without_appi" {
       "app-finturo-virtualentityapi-tst-nsure-01" = {
         name = "app-finturo-virtualentity-tst-nsure-01"
         https_only = true
-      },
+      }
     }
 }
 
