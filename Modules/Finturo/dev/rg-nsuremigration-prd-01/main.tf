@@ -9,6 +9,10 @@ resource "azurerm_public_ip" "vm-nsure-migration-1-ip" {
   resource_group_name = var.resource_group_name
   sku                 = "Standard"
   allocation_method   = "Static"
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01
+  ]
 }
 
 resource "azurerm_subnet" "nsure-migration-prd-1__default" {
@@ -16,6 +20,11 @@ resource "azurerm_subnet" "nsure-migration-prd-1__default" {
   virtual_network_name = "nsure-migration-prd-1-vnet"
   resource_group_name  = var.resource_group_name
   address_prefixes       = ["10.0.0.0/24"]
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01,
+    azurerm_virtual_network.nsure-migration-prd-1-vnet
+  ]
 }
 
 resource "azurerm_virtual_machine" "nsure-migration-prd-1__vm-nsure-migration-1" {
@@ -51,6 +60,13 @@ resource "azurerm_virtual_machine" "nsure-migration-prd-1__vm-nsure-migration-1"
   zones = [
     "1"
   ]
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01,
+    azurerm_network_interface.vm-nsure-migratio949_z1,
+    azurerm_managed_disk.vm-nsure-migration-1_OsDisk_1_5394a1a6ec964bd69a141f173b93c4ad
+
+  ]
 }
 
 
@@ -61,6 +77,11 @@ resource "azurerm_virtual_machine_extension" "AzureNetworkWatcherExtension" {
   virtual_machine_id         = "/subscriptions/42b712fa-047c-4530-b774-6444cc123ae7/resourceGroups/nsure-migration-prd-1/providers/Microsoft.Compute/virtualMachines/vm-nsure-migration-1"
   type                       = "NetworkWatcherAgentWindows"
   auto_upgrade_minor_version = true
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01,
+    azurerm_virtual_machine.nsure-migration-prd-1__vm-nsure-migration-1
+  ]
 }
 
 
@@ -74,6 +95,10 @@ resource "azurerm_managed_disk" "vm-nsure-migration-1_OsDisk_1_5394a1a6ec964bd69
   storage_account_type = "StandardSSD_LRS"
   disk_size_gb         = "127"
   zone = "1"
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01
+  ]
 }
 resource "azurerm_network_security_group" "vm-nsure-migration-1-nsg" {
   name                = "vm-nsure-migration-1-nsg"
@@ -90,6 +115,10 @@ resource "azurerm_network_security_group" "vm-nsure-migration-1-nsg" {
     destination_port_range     = "3389"
     destination_address_prefix = "*"
   }
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01
+  ]
 }
 
 resource "azurerm_network_interface" "vm-nsure-migratio949_z1" {
@@ -105,6 +134,12 @@ resource "azurerm_network_interface" "vm-nsure-migratio949_z1" {
     public_ip_address_id          = azurerm_public_ip.vm-nsure-migration-1-ip.id
     primary                       = true
   }
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01,
+    azurerm_subnet.nsure-migration-prd-1__default,
+    azurerm_public_ip.vm-nsure-migration-1-ip
+  ]
 }
 
 resource "azurerm_virtual_network" "nsure-migration-prd-1-vnet" {
@@ -116,5 +151,9 @@ resource "azurerm_virtual_network" "nsure-migration-prd-1-vnet" {
     name           = "default"
     address_prefix = "10.0.0.0/24"
   }
+
+  depends_on = [
+    azurerm_resource_group.rg-nsuremigration-prd-01
+  ]
 }
 

@@ -6,12 +6,16 @@ resource "azurerm_resource_group" "rg-finturo-tst-01" {
 resource "azurerm_app_service_plan" "spfinturo-tst" {
   name                = "plan-finturotst-nsure-01"
   location            = var.location
-  resource_group_name = "var.resource_group_name"
+  resource_group_name = var.resource_group_name
   kind                = "app"
   sku {
     tier = "Basic"
     size = "B2"
   }
+  depends_on = [
+    azurerm_resource_group.rg-finturo-tst-01
+  ]
+
 }
 
 output "plan-finturotst-nsure-01_id" {
@@ -21,10 +25,15 @@ output "plan-finturotst-nsure-01_id" {
 resource "azurerm_servicebus_namespace" "spfinturo-tst" {
   name                = "sb-finturo-tst-nsure-01"
   location            = var.location
-  resource_group_name = "var.resource_group_name"
+  resource_group_name = var.resource_group_name
   sku                 = "Basic"
   tags = {
   }
+
+   depends_on = [
+    azurerm_resource_group.rg-finturo-tst-01
+  ]
+
 }
 
 resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_homeownerquotationqueue" {
@@ -35,6 +44,11 @@ resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_homeownerquotationq
   requires_duplicate_detection         = false
   requires_session                     = false
   dead_lettering_on_message_expiration = false
+
+   depends_on = [
+    azurerm_servicebus_namespace.spfinturo-tst
+  ]
+
 }
 
 resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_autoquotationqueue" {
@@ -45,6 +59,10 @@ resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_autoquotationqueue"
   requires_duplicate_detection         = false
   requires_session                     = false
   dead_lettering_on_message_expiration = false
+
+    depends_on = [
+    azurerm_servicebus_namespace.spfinturo-tst
+  ]
 }
 
 resource "azurerm_storage_account" "stfinturotstnsure01" {
@@ -57,4 +75,8 @@ resource "azurerm_storage_account" "stfinturotstnsure01" {
   enable_https_traffic_only = true
   tags = {
   }
+
+     depends_on = [
+    azurerm_resource_group.rg-finturo-tst-01
+  ]
 }

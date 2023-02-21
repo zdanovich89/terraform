@@ -24,12 +24,12 @@ provider "azurerm" {
 module "rg-finturo-tst-01" {
     source = "../Modules/Finturo/dev/rg-finturo-tst-01"
 }
-module "rg-nsure-dev-01" {
+module "rg-nsure-tst-01" {
     source = "../Modules/Finturo/dev/rg-nsure-01"
 
     app_service_plan_id_spfinturo_tst=module.rg-finturo-tst-01.plan-finturotst-nsure-01_id
 }
-module "rg-nsuredev-dev-01" {
+module "rg-nsure-dev-01" {
     source = "../Modules/Finturo/dev/rg-nsure-dev-01"
 }
 module "rg-nsuremigration-prd-01" {

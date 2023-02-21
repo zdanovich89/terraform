@@ -1,10 +1,10 @@
-resource "azurerm_resource_group" "rg-nsure-dev-01" {
+resource "azurerm_resource_group" "rg-nsure-tst-01" {
   name     = var.resource_group_name
   location = var.location
 }
 
 resource "azurerm_storage_account" "st-finturo-tst-nsure-01" {
-         name = "stfinturotstnsure01"
+         name = "stfinturonsuretstnsure01"
          location = var.location
          resource_group_name = var.resource_group_name
          account_tier = "Standard"
@@ -14,6 +14,10 @@ resource "azurerm_storage_account" "st-finturo-tst-nsure-01" {
 tags = {
          "ms-resource-usage"="azure-cloud-shell"
 }
+
+   depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 }
 
 resource "azurerm_application_insights" "appi-finturo-tst-nsure-01" {
@@ -21,6 +25,10 @@ resource "azurerm_application_insights" "appi-finturo-tst-nsure-01" {
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
+
+     depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 }
 
 resource "azurerm_sql_server" "sql-finturo-nsure-tst-nsure-01" {
@@ -29,9 +37,13 @@ resource "azurerm_sql_server" "sql-finturo-nsure-tst-nsure-01" {
          resource_group_name = var.resource_group_name
          version = "12.0"
          administrator_login= "admin-test"
-         administrator_login_password= ""
+         administrator_login_password= "ZAQ!2wsxCDE#"
 tags = {
 }
+
+   depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 }
 
 resource "azurerm_sql_database" "sqldb-finturo-nasuremaster-tst-nsure-01" {
@@ -39,6 +51,11 @@ resource "azurerm_sql_database" "sqldb-finturo-nasuremaster-tst-nsure-01" {
          location = var.location
          resource_group_name = var.resource_group_name
          server_name = azurerm_sql_server.sql-finturo-nsure-tst-nsure-01.name
+
+            depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_sql_server.sql-finturo-nsure-tst-nsure-01
+  ]
 }
 
 resource "azurerm_sql_database" "sqldb-finturo-nsuremain-tst-nsure-01" {
@@ -52,6 +69,11 @@ resource "azurerm_sql_database" "sqldb-finturo-nsuremain-tst-nsure-01" {
          create_mode= "Default"
 tags = {
 }
+
+depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_sql_server.sql-finturo-nsure-tst-nsure-01
+  ]
 }
 
 resource "azurerm_cosmosdb_account" "cosmos-finturo-tst-nsure-01" {
@@ -73,6 +95,10 @@ resource "azurerm_cosmosdb_account" "cosmos-finturo-tst-nsure-01" {
 tags = {
          "defaultExperience"="DocumentDB"
 }
+
+   depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 }
 
 resource "azurerm_cosmosdb_account" "cosmos-finturo-analytic-tst-nsure-01" {
@@ -95,6 +121,10 @@ tags = {
          "defaultExperience"="Core (SQL)"
          "hidden-cosmos-mmspecial"=""
 }
+
+   depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 }
 
 resource "azurerm_app_service" "app_services_with_appi" {
@@ -110,6 +140,15 @@ resource "azurerm_app_service" "app_services_with_appi" {
           APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-tst-nsure-01.instrumentation_key
           APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string          }
 
+        identity {
+    type = "SystemAssigned"
+  }
+
+        depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_application_insights.appi-finturo-tst-nsure-01
+  ]
+
 }
 resource "azurerm_app_service" "app_services_without_appi" {
 
@@ -122,6 +161,15 @@ resource "azurerm_app_service" "app_services_without_appi" {
          app_service_plan_id = var.app_service_plan_id_spfinturo_tst
          app_settings = {
          }
+
+         identity {
+    type = "SystemAssigned"
+  }
+
+
+            depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 
 }
 
@@ -139,15 +187,29 @@ resource "azurerm_function_app" "function_apps" {
           APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-tst-nsure-01.instrumentation_key
           APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string         
         }
+
+identity {
+    type = "SystemAssigned"
+  }
+
+
+           depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_application_insights.appi-finturo-tst-nsure-01
+  ]
 }
 
 resource "azurerm_servicebus_namespace" "sb-finturo-tst-nsure-01" {
-         name = "sb-finturo-tst-nsure-01"
+         name = "sb-finturonsure-tst-nsure-01"
          location = var.location
          resource_group_name = var.resource_group_name
          sku = "Basic"
 tags = {
 }
+
+   depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01
+  ]
 }
 
 resource "azurerm_servicebus_queue" "sb_queues" {
@@ -162,6 +224,10 @@ resource "azurerm_servicebus_queue" "sb_queues" {
          requires_duplicate_detection = each.value.requires_duplicate_detection
          requires_session =  each.value.requires_session
          dead_lettering_on_message_expiration = each.value.dead_lettering_on_message_expiration
+depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_servicebus_namespace.sb-finturo-tst-nsure-01
+  ]
 }
 
 resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
@@ -169,7 +235,7 @@ resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
   location            = var.location
   resource_group_name = var.resource_group_name
   ip_address_type     = "Public"
-  dns_name_label      = "aci-label"
+  dns_name_label      = "nsure-sftp-test"
   os_type             = "Linux"
 
   container {
@@ -184,6 +250,7 @@ resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
       share_name = "quinstreetfileshare"
       read_only = false
       storage_account_name = azurerm_storage_account.st-finturo-tst-nsure-01.name
+      storage_account_key = azurerm_storage_account.st-finturo-tst-nsure-01.primary_access_key
     }
     volume {
       name = "sftvolume2"
@@ -191,6 +258,7 @@ resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
       share_name = "everquotefileshare"
       read_only = false
       storage_account_name = azurerm_storage_account.st-finturo-tst-nsure-01.name
+      storage_account_key = azurerm_storage_account.st-finturo-tst-nsure-01.primary_access_key
     }
     volume {
       name = "sftvolume3"
@@ -198,6 +266,7 @@ resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
       share_name = "smartfinancialfileshare"
       read_only = false
       storage_account_name = azurerm_storage_account.st-finturo-tst-nsure-01.name
+      storage_account_key = azurerm_storage_account.st-finturo-tst-nsure-01.primary_access_key
     }
 
     ports {
@@ -208,21 +277,29 @@ resource "azurerm_container_group" "cg-finturo-main-tst-nsure-01" {
   tags = {
     
   }
+
+     depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_storage_account.st-finturo-tst-nsure-01
+  ]
 }
 
 
 resource "azurerm_key_vault" "nsure__nsure-keyvault" {
          name = "kv-finturo-tst-nsure-01"
-         location = "eastus"
-         resource_group_name = "nsure"
+         location = var.location
+         resource_group_name = var.resource_group_name
          sku_name="standard"
          tenant_id=var.tenant_id
          enabled_for_deployment=false
          enabled_for_disk_encryption=false
          enabled_for_template_deployment=false
+         timeouts {
+           read = "12m"
+         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_app.function_apps["func-finturo-background-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-background-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -254,7 +331,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_app.function_apps["func-finturo-sendgrid-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-sendgrid-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -326,7 +403,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_app_service.app_services_without_appi["app-finturo-virtualentityapi-tst-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_without_appi["app-finturo-virtualentityapi-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                  ]
                  secret_permissions = [
@@ -338,7 +415,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_app.function_apps["func-finturo-notification-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-notification-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                  ]
                  secret_permissions = [
@@ -350,7 +427,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-crmfileapi-tst-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-crmfileapi-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                  ]
                  secret_permissions = [
@@ -362,7 +439,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_app.function_apps["func-finturo-crm-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-crm-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -378,7 +455,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-insurancemicroservice-tst-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-insurancemicroservice-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -394,7 +471,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_function_app.function_apps["func-finturo-quotation-tst-nsure-01"].id
+                 object_id=azurerm_function_app.function_apps["func-finturo-quotation-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -442,7 +519,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-nsureapi-tst-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-nsureapi-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -474,7 +551,7 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
          access_policy {
                  tenant_id=var.tenant_id
-                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-messengermicroservice-tst-nsure-01"].id
+                 object_id=azurerm_app_service.app_services_with_appi["app-finturo-messengermicroservice-tst-nsure-01"].identity[0].principal_id
                  key_permissions = [
                          "Get",
                          "List",
@@ -521,4 +598,11 @@ resource "azurerm_key_vault" "nsure__nsure-keyvault" {
         }
 tags = {
 }
+
+   depends_on = [
+    azurerm_resource_group.rg-nsure-tst-01,
+    azurerm_app_service.app_services_with_appi,
+    azurerm_app_service.app_services_without_appi,
+    azurerm_function_app.function_apps
+  ]
 }
