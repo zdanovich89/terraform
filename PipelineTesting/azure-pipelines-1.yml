@@ -16,7 +16,7 @@ stages:
 
         - script: |
             terrascan scan -t azure -i terraform
-          workingDirectory: $(System.DefaultWorkingDirectory)/
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Run terrascan'             
     - stage: AzureCLI
       displayName: 'Azure CLI'
