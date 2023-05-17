@@ -16,7 +16,7 @@ stages:
 
         - script: |
             echo '$(System.DefaultWorkingDirectory)'
-            terrascan scan -t azure -i terraform
+            terrascan scan -t azure -i terraform --output junit-xml > $(System.DefaultWorkingDirectory)Terrascan-Report.xml
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
           displayName: 'Run terrascan'             
  
