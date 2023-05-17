@@ -1,6 +1,23 @@
 trigger: none
 stages:
-          
+    - stage: validate
+      jobs:
+      - job: Compliance
+        displayName: 'Run Terrascan to check for compliance'
+        pool: 
+          vmImage: 'ubuntu-latest'
+      
+        steps:
+        - script: |
+            curl --location https://github.com/accurics/terrascan/releases/download/v1.3.1/terrascan_1.3.1_Linux_x86_64.tar.gz --output terrascan.tar.gz
+            tar -xvf terrascan.tar.gz
+            sudo install terrascan /usr/local/bin    
+          displayName: 'Get tools'
+
+        - script: |
+            terrascan scan -t azure -i terraform
+          workingDirectory: $(System.DefaultWorkingDirectory)/
+          displayName: 'Run terrascan'             
     - stage: AzureCLI
       displayName: 'Azure CLI'
       jobs:
