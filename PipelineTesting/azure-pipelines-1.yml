@@ -8,6 +8,8 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
           steps:
+          - checkout: self
+            clean: true
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
