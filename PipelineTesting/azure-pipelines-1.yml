@@ -15,6 +15,7 @@ stages:
           displayName: 'Get tools'
 
         - script: |
+            echo '$(System.DefaultWorkingDirectory)'
             terrascan scan -t azure -i terraform
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           displayName: 'Run terrascan'             
