@@ -1,5 +1,6 @@
 trigger: none
 stages:
+          
     - stage: AzureCLI
       displayName: 'Azure CLI'
       jobs:
@@ -10,9 +11,10 @@ stages:
           steps:
           - checkout: self
             clean: true
+
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
               scriptType: 'bash'
               scriptLocation: 'scriptPath'
-              scriptPath: '$(System.DefaultWorkingDirectory)/RunTerraformScript.sh' 
+              scriptPath: '$(System.DefaultWorkingDirectory)/RunTerraformScript.sh'
