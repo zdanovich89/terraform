@@ -10,23 +10,9 @@ stages:
           steps:
           - checkout: self
             clean: true
-          - task: AzureCLI@2
+           - task: AzureCLI@2
             inputs:
               azureSubscription: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
               scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                # Install Terraform
-                echo "Installing Terraform..."
-                curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
-                unzip terraform_1.0.0_linux_amd64.zip
-                sudo mv terraform /usr/local/bin/
-                rm terraform_1.0.0_linux_amd64.zip
-
-                # Initialize Terraform
-                echo "Initializing Terraform..."
-                terraform init
-
-                # Apply Terraform configuration
-                echo "Applying Terraform configuration..."
-                terraform apply -auto-approve
+              scriptLocation: 'scriptPath'
+              scriptPath: '$(System.DefaultWorkingDirectory)/RunTerraformScript.sh'
