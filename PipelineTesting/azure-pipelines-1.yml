@@ -22,10 +22,10 @@ stages:
 
     - stage: validate
       jobs:
-       - job: Compliance
-         displayName: 'Run Terrascan to check for compliance'
-         pool: 
-           vmImage: 'ubuntu-latest'   
+      - job: Compliance
+        displayName: 'Run Terrascan to check for compliance'
+        pool: 
+          vmImage: 'ubuntu-latest'   
 
         steps:
         - script: |
