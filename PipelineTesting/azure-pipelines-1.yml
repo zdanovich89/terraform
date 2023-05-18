@@ -51,6 +51,7 @@ stages:
             docker pull eerkunt/terraform-compliance
             terraform init
             terraform plan -out main.tfplan
+            terraform show -json main.tfplan > main.tfplan.json
             docker run --rm -v '$(System.DefaultWorkingDirectory)/PipelineTesting' eerkunt/terraform-compliance -f '$(System.DefaultWorkingDirectory)/PipelineTesting' -p main.tfplan
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
         # - script:
