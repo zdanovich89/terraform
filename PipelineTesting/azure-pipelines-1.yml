@@ -16,7 +16,7 @@ stages:
 
         - script: |
             terrascan scan -t azure -i terraform
-          workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting/'
           displayName: 'Run terrascan'
 
     - stage: validate_tfsec
