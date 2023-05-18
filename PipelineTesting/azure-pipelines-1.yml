@@ -18,5 +18,17 @@ stages:
             echo '$(System.DefaultWorkingDirectory)'
             terrascan scan -t azure -i terraform
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
-          displayName: 'Run terrascan'             
- 
+          displayName: 'Run terrascan'
+
+    - stage: validate
+      jobs:
+       - job: Compliance
+         displayName: 'Run Terrascan to check for compliance'
+         pool: 
+           vmImage: 'ubuntu-latest'   
+
+        steps:
+        - script: |
+            docker pull aquasec/tfsec-ci
+            docker run --rm -it - v "$(System.DefaultWorkingDirectory)/PipelineTesting" aquasec/tfsec /PipelineTesting
+          displayName: tfsec analysis
