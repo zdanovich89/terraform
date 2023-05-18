@@ -52,7 +52,7 @@ stages:
             terraform init
             terraform plan -out=plan.out 
             docker run --rm -v '$(System.DefaultWorkingDirectory)/PipelineTesting' eerkunt/terraform-compliance -f '$(System.DefaultWorkingDirectory)/PipelineTesting' -p plan.out
-
+          workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
         # - script:
         #     chechov -d .
         #   workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
