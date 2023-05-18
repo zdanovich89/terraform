@@ -30,5 +30,5 @@ stages:
         steps:
         - script: |
             docker pull aquasec/tfsec-ci
-            docker run --rm -v "$(System.DefaultWorkingDirectory)/PipelineTesting" aquasec/tfsec /PipelineTesting
+            docker run --rm -v "$(System.DefaultWorkingDirectory)/PipelineTesting" aquasec/tfsec "$(System.DefaultWorkingDirectory)/PipelineTesting"
           displayName: tfsec analysis
