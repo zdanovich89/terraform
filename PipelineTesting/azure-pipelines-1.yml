@@ -1,6 +1,6 @@
 trigger: none
 stages:
-    - stage: validate
+    - stage: validate Terrascan
       jobs:
       - job: Compliance
         displayName: 'Run Terrascan to check for compliance'
@@ -20,10 +20,10 @@ stages:
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
           displayName: 'Run terrascan'
 
-    - stage: validate
+    - stage: validate tfsec
       jobs:
       - job: Compliance
-        displayName: 'Run Terrascan to check for compliance'
+        displayName: 'Run tfsec to check for compliance'
         pool: 
           vmImage: 'ubuntu-latest'   
 
