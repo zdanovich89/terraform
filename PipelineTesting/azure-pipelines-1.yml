@@ -53,7 +53,7 @@ stages:
           displayName: 'Get tools'
         
         - script:
-            checkov --directory '$(System.DefaultWorkingDirectory)/PipelineTesting' -o cli
+            checkov --directory '$(System.DefaultWorkingDirectory)/PipelineTesting'
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
           displayName: 'Run Chechov'
           continueOnError: true
