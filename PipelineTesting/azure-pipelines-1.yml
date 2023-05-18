@@ -51,7 +51,7 @@ stages:
         steps:
         - script: |
             docker pull eerkunt/terraform-compliance
-            docker run --rm -v '$(System.DefaultWorkingDirectory)/PipelineTesting' eerkunt/terraform-compliance -f features
+            docker run --rm -v '$(System.DefaultWorkingDirectory)/PipelineTesting' eerkunt/terraform-compliance -f '$(System.DefaultWorkingDirectory)/PipelineTesting'
         # - script:
         #     chechov -d .
         #   workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
