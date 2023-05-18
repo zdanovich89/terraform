@@ -41,5 +41,5 @@ stages:
             sudo mv tfsec /usr/local/bin/
 
         - script: |
-            tfsec --no-color --format=json .
+            tfsec
           displayName: 'Run tfsec'
