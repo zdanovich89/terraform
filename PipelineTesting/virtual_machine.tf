@@ -1,12 +1,12 @@
-resource "azurerm_resource_group" "rg-terraform-dev-01" {
+resource "azurerm_resource_group" "rg-terraform-dev-02" {
     name     = "rg-terraform-dev-01"
     location = "East US"
 }
 
 resource "azurerm_linux_virtual_machine" "example" {
     name                = "example-machine"
-    resource_group_name = azurerm_resource_group.rg-terraform-dev-01.name
-    location            = azurerm_resource_group.rg-terraform-dev-01.location
+    resource_group_name = azurerm_resource_group.rg-terraform-dev-02.name
+    location            = azurerm_resource_group.rg-terraform-dev-02.location
     size                = "Standard_F2"
     admin_username      = "adminuser"
     network_interface_ids = [
