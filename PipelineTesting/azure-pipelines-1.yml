@@ -51,13 +51,11 @@ stages:
         steps:
         - script: |
             sudo apt update
-            sudo apt install -y software-properties-common
+            sudo apt install software-properties-common
             sudo add-apt-repository ppa:deadsnakes/ppa
-            sudo apt install -y python3.7
-            sudo apt install -y python3-pip
-            sudo pip3 install dataclasses
-            sudo apt install -y python3-setuptools
-            sudo python3.7 -m pip install -U chechov
+            sudo apt install python3.7
+            sudo apt install python3-pip
+            sudo python3.7 -m pip install -U checkov
         - script:
             chechov -d .
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
