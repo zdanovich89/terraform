@@ -1,6 +1,6 @@
 trigger: none
 stages:
-    - stage: validate_Terrascan
+    - stage: Terrascan_validate
       jobs:
       - job: Compliance
         displayName: 'Run Terrascan to check for compliance'
@@ -20,7 +20,7 @@ stages:
           displayName: 'Run terrascan'
           continueOnError: true
 
-    - stage: validate_tfsec
+    - stage: TFSEC_validate
       jobs:
       - job: Compliance
         displayName: 'Run tfsec to check for compliance'
@@ -32,6 +32,7 @@ stages:
             curl -L -o tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
             chmod +x tfsec
             sudo mv tfsec /usr/local/bin/
+          displayName: 'Get tools'
 
         - script: |
             tfsec
@@ -39,18 +40,20 @@ stages:
           displayName: 'Run tfsec'
           continueOnError: true
 
-    - stage: validate_terraform_compliance
+    - stage: Checkov_validate
       jobs:
       - job: Compliance
-        displayName: 'Run terraform-compliance to check for compliance'
+        displayName: 'Run Checkov to check for compliance'
         pool: 
           vmImage: 'ubuntu-latest'
       
         steps:
         - script: |   
             pip3 install checkov
-          workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
+          displayName: 'Get tools'
+        
         - script:
-            checkov --directory '$(System.DefaultWorkingDirectory)/PipelineTesting'
+            checkov --directory '$(System.DefaultWorkingDirectory)/PipelineTesting' -o cli
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
+          displayName: 'Run Chechov'
           continueOnError: true
