@@ -21,6 +21,8 @@ stages:
           displayName: 'Run terrascan'
 
     - stage: validate_tfsec
+      dependsOn: validate_Terrascan
+      condition: always()
       jobs:
       - job: Compliance
         displayName: 'Run tfsec to check for compliance'
