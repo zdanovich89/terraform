@@ -1,6 +1,6 @@
 trigger: none
 stages:
-    - stage: validate Terrascan
+    - stage: validate_Terrascan
       jobs:
       - job: Compliance
         displayName: 'Run Terrascan to check for compliance'
@@ -20,7 +20,7 @@ stages:
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
           displayName: 'Run terrascan'
 
-    - stage: validate tfsec
+    - stage: validate_tfsec
       jobs:
       - job: Compliance
         displayName: 'Run tfsec to check for compliance'
