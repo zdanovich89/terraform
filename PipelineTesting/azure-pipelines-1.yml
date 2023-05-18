@@ -18,21 +18,17 @@ stages:
             terrascan scan
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
           displayName: 'Run terrascan'
+          continueOnError: true
 
     - stage: validate_tfsec
-      dependsOn: validate_Terrascan
-      condition: always()
+      # dependsOn: validate_Terrascan
+      # condition: always()
       jobs:
       - job: Compliance
         displayName: 'Run tfsec to check for compliance'
         pool: 
           vmImage: 'ubuntu-latest'   
-
-        # steps:
-        # - script: |
-        #     docker pull aquasec/tfsec-ci
-        #     docker run --rm -v "$(System.DefaultWorkingDirectory)/PipelineTesting" aquasec/tfsec "$(System.DefaultWorkingDirectory)/PipelineTesting"
-        #   displayName: tfsec analysis
+      
         steps:
         - script: |
             curl -L -o tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
@@ -43,3 +39,17 @@ stages:
             tfsec
           workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
           displayName: 'Run tfsec'
+          continueOnError: true
+
+    - stage: validate_Terrascan
+      jobs:
+      - job: Compliance
+        displayName: 'Run Terrascan to check for compliance'
+        pool: 
+          vmImage: 'ubuntu-latest'
+      
+        steps:
+        - script: |
+            pip install chechov
+            chechov -d .
+          workingDirectory: '$(System.DefaultWorkingDirectory)/PipelineTesting'
