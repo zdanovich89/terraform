@@ -41,10 +41,10 @@ stages:
           displayName: 'Run tfsec'
           continueOnError: true
 
-    - stage: validate_Terrascan
+    - stage: validate_chechov
       jobs:
       - job: Compliance
-        displayName: 'Run Terrascan to check for compliance'
+        displayName: 'Run chechov to check for compliance'
         pool: 
           vmImage: 'ubuntu-latest'
       
