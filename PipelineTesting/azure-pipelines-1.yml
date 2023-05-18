@@ -41,7 +41,7 @@ stages:
           displayName: 'Run tfsec'
           continueOnError: true
 
-    - stage: validate_terraform-compliance
+    - stage: validate_terraform_compliance
       jobs:
       - job: Compliance
         displayName: 'Run terraform-compliance to check for compliance'
