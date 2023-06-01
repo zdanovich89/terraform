@@ -19,7 +19,7 @@ resource "azurerm_subnet" "nsure-migration-prd-1__default" {
   name                 = "default"
   virtual_network_name = "nsure-migration-prd-1-vnet"
   resource_group_name  = var.resource_group_name
-  address_prefixes       = ["10.0.0.0/24"]
+  address_prefixes     = ["10.0.0.0/24"]
 
   depends_on = [
     azurerm_resource_group.rg-nsuremigration-prd-01,
@@ -94,7 +94,7 @@ resource "azurerm_managed_disk" "vm-nsure-migration-1_OsDisk_1_5394a1a6ec964bd69
   image_reference_id   = "/Subscriptions/42b712fa-047c-4530-b774-6444cc123ae7/Providers/Microsoft.Compute/Locations/eastus/Publishers/MicrosoftWindowsDesktop/ArtifactTypes/VMImage/Offers/Windows-10/Skus/win10-21h2-pro-g2/Versions/19044.1826.220706"
   storage_account_type = "StandardSSD_LRS"
   disk_size_gb         = "127"
-  zone = "1"
+  zone                 = "1"
 
   depends_on = [
     azurerm_resource_group.rg-nsuremigration-prd-01
