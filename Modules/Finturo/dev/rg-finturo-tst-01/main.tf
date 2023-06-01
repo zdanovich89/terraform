@@ -3,23 +3,37 @@ resource "azurerm_resource_group" "rg-finturo-tst-01" {
   location = var.location
 }
 
-resource "azurerm_app_service_plan" "spfinturo-tst" {
+#==== This resource has been deprecated in version 3.0 of the AzureRM provider and will be removed in version 4.0 ====
+
+# resource "azurerm_app_service_plan" "spfinturo-tst" {
+#   name                = "plan-finturotst-nsure-01"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   kind                = "app"
+#   sku {
+#     tier = "Basic"
+#     size = "B2"
+#   }
+#   depends_on = [
+#     azurerm_resource_group.rg-finturo-tst-01
+#   ]
+
+# }
+
+resource "azurerm_service_plan" "spfinturo-tst" {
   name                = "plan-finturotst-nsure-01"
-  location            = var.location
   resource_group_name = var.resource_group_name
-  kind                = "app"
-  sku {
-    tier = "Basic"
-    size = "B2"
-  }
+  location            = var.location
+  os_type             = "Windows"
+  sku_name            = "B2"
+
   depends_on = [
     azurerm_resource_group.rg-finturo-tst-01
   ]
-
 }
 
 output "plan-finturotst-nsure-01_id" {
-  value = azurerm_app_service_plan.spfinturo-tst.id
+  value = azurerm_service_plan.spfinturo-tst.id
 }
 
 resource "azurerm_servicebus_namespace" "spfinturo-tst" {
@@ -30,7 +44,7 @@ resource "azurerm_servicebus_namespace" "spfinturo-tst" {
   tags = {
   }
 
-   depends_on = [
+  depends_on = [
     azurerm_resource_group.rg-finturo-tst-01
   ]
 
@@ -38,14 +52,14 @@ resource "azurerm_servicebus_namespace" "spfinturo-tst" {
 
 resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_homeownerquotationqueue" {
   name                                 = "homeownerquotationqueue"
-  namespace_id = azurerm_servicebus_namespace.spfinturo-tst.id
+  namespace_id                         = azurerm_servicebus_namespace.spfinturo-tst.id
   enable_partitioning                  = true
   enable_express                       = false
   requires_duplicate_detection         = false
   requires_session                     = false
   dead_lettering_on_message_expiration = false
 
-   depends_on = [
+  depends_on = [
     azurerm_servicebus_namespace.spfinturo-tst
   ]
 
@@ -53,14 +67,14 @@ resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_homeownerquotationq
 
 resource "azurerm_servicebus_queue" "sb-finturo-tst-nsure-01_autoquotationqueue" {
   name                                 = "autoquotationqueue"
-  namespace_id = azurerm_servicebus_namespace.spfinturo-tst.id
+  namespace_id                         = azurerm_servicebus_namespace.spfinturo-tst.id
   enable_partitioning                  = true
   enable_express                       = false
   requires_duplicate_detection         = false
   requires_session                     = false
   dead_lettering_on_message_expiration = false
 
-    depends_on = [
+  depends_on = [
     azurerm_servicebus_namespace.spfinturo-tst
   ]
 }
@@ -76,7 +90,7 @@ resource "azurerm_storage_account" "stfinturotstnsure01" {
   tags = {
   }
 
-     depends_on = [
+  depends_on = [
     azurerm_resource_group.rg-finturo-tst-01
   ]
 }
