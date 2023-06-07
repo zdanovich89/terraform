@@ -30,21 +30,6 @@ resource "azurerm_application_insights" "appi-finturo-tst-nsure-01" {
     azurerm_resource_group.rg-nsure-tst-01
   ]
 }
-# ==== The azurerm_sql_server resource is deprecated in version 3.0 of the AzureRM provider and will be removed in version 4.0 ====
-# resource "azurerm_sql_server" "sql-finturo-tst-nsure-01" {
-#   name                         = "sql-finturo-tst-nsure-01"
-#   location                     = var.location
-#   resource_group_name          = var.resource_group_name
-#   version                      = "12.0"
-#   administrator_login          = "admin-test"
-#   administrator_login_password = "ZAQ!2wsxCDE#"
-#   tags = {
-#   }
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-tst-01
-#   ]
-# }
 
 resource "azurerm_mssql_server" "sql-finturo-tst-nsure-01" {
   name                         = "sql-finturo-tst-nsure-01"
@@ -61,19 +46,6 @@ resource "azurerm_mssql_server" "sql-finturo-tst-nsure-01" {
   ]
 }
 
-#  === The azurerm_sql_database resource is deprecated in version 3.0 of the AzureRM provider and will be removed in version 4.0. ===
-# resource "azurerm_sql_database" "sqldb-finturo-master-tst-nsure-01" {
-#   name                = "sqldb-finturo-nasuremaster-tst-nsure-01"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   server_name         = azurerm_mssql_server.sql-finturo-tst-nsure-01.name
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-tst-01,
-#     azurerm_mssql_server.sql-finturo-tst-nsure-01
-#   ]
-# }
-
 resource "azurerm_mssql_database" "sqldb-finturo-master-tst-nsure-01" {
   name      = "sqldb-finturo-master-tst-nsure-01"
   server_id = azurerm_mssql_server.sql-finturo-tst-nsure-01.id
@@ -84,25 +56,6 @@ resource "azurerm_mssql_database" "sqldb-finturo-master-tst-nsure-01" {
   ]
 
 }
-
-#  === The azurerm_sql_database resource is deprecated in version 3.0 of the AzureRM provider and will be removed in version 4.0. ===
-# resource "azurerm_sql_database" "sqldb-finturo-main-tst-nsure-01" {
-#   name                             = "sqldb-finturo-main-tst-nsure-01"
-#   location                         = var.location
-#   resource_group_name              = var.resource_group_name
-#   server_name                      = azurerm_mssql_server.sql-finturo-tst-nsure-01.name
-#   collation                        = "SQL_Latin1_General_CP1_CI_AS"
-#   edition                          = "Standard"
-#   requested_service_objective_name = "S0"
-#   create_mode                      = "Default"
-#   tags = {
-#   }
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-tst-01,
-#     azurerm_mssql_server.sql-finturo-tst-nsure-01
-#   ]
-# }
 
 resource "azurerm_mssql_database" "sqldb-finturo-main-tst-nsure-01" {
   name      = "sqldb-finturo-main-tst-nsure-01"
@@ -168,31 +121,6 @@ resource "azurerm_cosmosdb_account" "cosmos-finturo-analytic-tst-nsure-01" {
   ]
 }
 
-# === The `azurerm_app_service` resource has been superseded by the `azurerm_linux_web_app` and `azurerm_windows_web_app` resources ===
-# resource "azurerm_app_service" "app_services_with_appi" {
-
-#   for_each = var.app_services_with_appi
-
-#   name                = each.value.name
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   https_only          = each.value.https_only
-#   app_service_plan_id = var.app_service_plan_id_spfinturo_tst
-#   app_settings = {
-#     APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appi-finturo-tst-nsure-01.instrumentation_key
-#   APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string }
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-tst-01,
-#     azurerm_application_insights.appi-finturo-tst-nsure-01
-#   ]
-
-# }
-
 resource "azurerm_windows_web_app" "app_services_with_appi" {
 
   for_each = var.app_services_with_appi
@@ -217,29 +145,6 @@ resource "azurerm_windows_web_app" "app_services_with_appi" {
     azurerm_application_insights.appi-finturo-tst-nsure-01
   ]
 }
-#  === The `azurerm_app_service` resource has been superseded by the `azurerm_linux_web_app` and `azurerm_windows_web_app` resources ===
-# resource "azurerm_app_service" "app_services_without_appi" {
-
-#   for_each = var.app_services_without_appi
-
-#   name                = each.value.name
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   https_only          = each.value.https_only
-#   app_service_plan_id = var.app_service_plan_id_spfinturo_tst
-#   app_settings = {
-#   }
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-tst-01
-#   ]
-
-# }
 
 resource "azurerm_windows_web_app" "app_services_without_appi" {
 
@@ -262,33 +167,6 @@ resource "azurerm_windows_web_app" "app_services_without_appi" {
     azurerm_resource_group.rg-nsure-tst-01
   ]
 }
-
-# === The `azurerm_function_app` resource has been superseded by the `azurerm_linux_function_app` and `azurerm_windows_function_app` resources. ===
-# resource "azurerm_function_app" "function_apps" {
-#   for_each                   = var.function_apps
-#   name                       = each.value.name
-#   location                   = var.location
-#   resource_group_name        = var.resource_group_name
-#   app_service_plan_id        = var.app_service_plan_id_spfinturo_tst
-#   https_only                 = each.value.https_only
-#   storage_account_name       = azurerm_storage_account.st-finturo-tst-nsure-01.name
-#   storage_account_access_key = azurerm_storage_account.st-finturo-tst-nsure-01.primary_access_key
-#   enable_builtin_logging     = each.value.enable_builtin_logging
-#   app_settings = {
-#     APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.appi-finturo-tst-nsure-01.instrumentation_key
-#     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-tst-nsure-01.connection_string
-#   }
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-tst-01,
-#     azurerm_application_insights.appi-finturo-tst-nsure-01
-#   ]
-# }
 
 resource "azurerm_windows_function_app" "function_apps" {
   for_each                   = var.function_apps

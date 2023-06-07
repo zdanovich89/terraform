@@ -47,22 +47,6 @@ resource "azurerm_application_insights" "appi-finturo-dev-nsure-01" {
   ]
 }
 
-
-# resource "azurerm_sql_server" "sql-finturo-main-dev-nsure-01" {
-#   name                         = "sql-finturo-main-dev-nsure-01"
-#   location                     = var.location
-#   resource_group_name          = var.resource_group_name
-#   version                      = "12.0"
-#   administrator_login          = "nsure"
-#   administrator_login_password = "ZAQ!2wsxCDE#"
-#   tags = {
-#   }
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01
-#   ]
-# }
-
 resource "azurerm_mssql_server" "sql-finturo-dev-nsure-01" {
   name                         = "sql-finturo-dev-nsure-01"
   resource_group_name          = var.resource_group_name
@@ -78,24 +62,6 @@ resource "azurerm_mssql_server" "sql-finturo-dev-nsure-01" {
   ]
 }
 
-# resource "azurerm_sql_database" "sgldb-finturo-main-dev-nsure-01" {
-#   name                             = "sgldb-finturo-main-dev-nsure-01"
-#   location                         = var.location
-#   resource_group_name              = var.resource_group_name
-#   server_name                      = "sql-finturo-main-dev-nsure-01"
-#   collation                        = "SQL_Latin1_General_CP1_CI_AS"
-#   edition                          = "Standard"
-#   requested_service_objective_name = "S0"
-#   create_mode                      = "Default"
-#   tags = {
-#   }
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01,
-#     azurerm_mssql_server.sql-finturo-main-dev-nsure-01
-#   ]
-# }
-
 resource "azurerm_mssql_database" "sqldb-finturo-main-dev-nsure-01" {
   name      = "sqldb-finturo-main-dev-nsure-01"
   server_id = azurerm_mssql_server.sql-finturo-dev-nsure-01.id
@@ -109,18 +75,6 @@ resource "azurerm_mssql_database" "sqldb-finturo-main-dev-nsure-01" {
 
 }
 
-# resource "azurerm_sql_database" "sgldb-finturo-master-dev-nsure-01" {
-#   name                = "sgldb-finturo-master-dev-nsure-01"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   server_name         = "sql-finturo-main-dev-nsure-01"
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01,
-#     azurerm_mssql_server.sql-finturo-dev-nsure-01
-#   ]
-# }
-
 resource "azurerm_mssql_database" "sqldb-finturo-master-dev-nsure-01" {
   name      = "sqldb-finturo-master-dev-nsure-01"
   server_id = azurerm_mssql_server.sql-finturo-dev-nsure-01.id
@@ -131,7 +85,6 @@ resource "azurerm_mssql_database" "sqldb-finturo-master-dev-nsure-01" {
   ]
 
 }
-
 
 resource "azurerm_cosmosdb_account" "cosmos-finturo-dev-nsure-01" {
   name                = "cosmos-finturo-dev-nsure-01"
@@ -184,21 +137,6 @@ resource "azurerm_cosmosdb_account" "cosmos-finturo-analytic-dev-nsure-01" {
   ]
 }
 
-# resource "azurerm_app_service_plan" "plan-finturo-dev-nsure-01" {
-#   name                = "plan-finturo-dev-nsure-01"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   kind                = "app"
-#   sku {
-#     tier = "Basic"
-#     size = "B2"
-#   }
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01
-#   ]
-# }
-
 resource "azurerm_service_plan" "plan-finturo-dev-nsure-01" {
   name                = "plan-finturo-dev-nsure-01"
   resource_group_name = var.resource_group_name
@@ -210,31 +148,6 @@ resource "azurerm_service_plan" "plan-finturo-dev-nsure-01" {
     azurerm_resource_group.rg-nsure-dev-01
   ]
 }
-
-# resource "azurerm_app_service" "app_services_with_appi" {
-
-#   for_each = var.app_services_with_appi
-
-#   name                = each.value.name
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   https_only          = each.value.https_only
-#   app_service_plan_id = azurerm_service_plan.plan-finturo-dev-nsure-01.id
-#   app_settings = {
-#     APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.appi-finturo-dev-nsure-01.instrumentation_key
-#     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-dev-nsure-01.connection_string
-#   }
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01,
-#     azurerm_application_insights.appi-finturo-dev-nsure-01
-#   ]
-
-# }
 
 resource "azurerm_windows_web_app" "app_services_with_appi" {
 
@@ -260,27 +173,6 @@ resource "azurerm_windows_web_app" "app_services_with_appi" {
     azurerm_application_insights.appi-finturo-dev-nsure-01
   ]
 }
-# resource "azurerm_app_service" "app_services_without_appi" {
-
-#   for_each = var.app_services_without_appi
-
-#   name                = each.value.name
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   https_only          = each.value.https_only
-#   app_service_plan_id = azurerm_service_plan.plan-finturo-dev-nsure-01.id
-#   app_settings = {
-#   }
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01
-#   ]
-
-# }
 
 resource "azurerm_windows_web_app" "app_services_without_appi" {
 
@@ -303,30 +195,6 @@ resource "azurerm_windows_web_app" "app_services_without_appi" {
     azurerm_resource_group.rg-nsure-dev-01
   ]
 }
-# resource "azurerm_function_app" "function_apps" {
-#   for_each                   = var.function_apps
-#   name                       = each.value.name
-#   location                   = var.location
-#   resource_group_name        = var.resource_group_name
-#   app_service_plan_id        = azurerm_service_plan.plan-finturo-dev-nsure-01.id
-#   https_only                 = each.value.https_only
-#   storage_account_name       = azurerm_storage_account.st-finturo-dev-nsure-01.name
-#   storage_account_access_key = azurerm_storage_account.st-finturo-dev-nsure-01.primary_access_key
-#   enable_builtin_logging     = each.value.enable_builtin_logging
-#   app_settings = {
-#     APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.appi-finturo-dev-nsure-01.instrumentation_key
-#     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-finturo-dev-nsure-01.connection_string
-#   }
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-
-#   depends_on = [
-#     azurerm_resource_group.rg-nsure-dev-01,
-#     azurerm_application_insights.appi-finturo-dev-nsure-01
-#   ]
-# }
 
 resource "azurerm_windows_function_app" "function_apps" {
   for_each                   = var.function_apps

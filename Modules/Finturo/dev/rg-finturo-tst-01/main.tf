@@ -3,23 +3,6 @@ resource "azurerm_resource_group" "rg-finturo-tst-01" {
   location = var.location
 }
 
-#==== This resource has been deprecated in version 3.0 of the AzureRM provider and will be removed in version 4.0 ====
-
-# resource "azurerm_app_service_plan" "spfinturo-tst" {
-#   name                = "plan-finturotst-nsure-01"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   kind                = "app"
-#   sku {
-#     tier = "Basic"
-#     size = "B2"
-#   }
-#   depends_on = [
-#     azurerm_resource_group.rg-finturo-tst-01
-#   ]
-
-# }
-
 resource "azurerm_service_plan" "spfinturo-tst" {
   name                = "plan-finturotst-nsure-01"
   resource_group_name = var.resource_group_name
