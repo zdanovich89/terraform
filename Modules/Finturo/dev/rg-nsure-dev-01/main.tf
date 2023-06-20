@@ -20,6 +20,54 @@ resource "azurerm_storage_account" "st-finturo-dev-nsure-01" {
   ]
 }
 
+resource "azurerm_storage_share" "quinstreetfileshare" {
+  name                 = "quinstreetfileshare"
+  storage_account_name = azurerm_storage_account.st-finturo-dev-nsure-01.name
+  quota                = 50
+
+  acl {
+    id = "quinstreetfileshare"
+    access_policy {
+      permissions = "rwdl"
+    }
+  }
+  depends_on = [
+    azurerm_storage_account.st-finturo-dev-nsure-01
+  ]
+}
+
+resource "azurerm_storage_share" "everquotefileshare" {
+  name                 = "everquotefileshare"
+  storage_account_name = azurerm_storage_account.st-finturo-dev-nsure-01.name
+  quota                = 50
+
+  acl {
+    id = "everquotefileshare"
+    access_policy {
+      permissions = "rwdl"
+    }
+  }
+  depends_on = [
+    azurerm_storage_account.st-finturo-dev-nsure-01
+  ]
+}
+
+resource "azurerm_storage_share" "smartfinancialfileshare" {
+  name                 = "smartfinancialfileshare"
+  storage_account_name = azurerm_storage_account.st-finturo-dev-nsure-01.name
+  quota                = 50
+
+  acl {
+    id = "smartfinancialfileshare"
+    access_policy {
+      permissions = "rwdl"
+    }
+  }
+  depends_on = [
+    azurerm_storage_account.st-finturo-dev-nsure-01
+  ]
+}
+
 resource "azurerm_log_analytics_workspace" "workspace-finturo-dev-nsure-01" {
   name                = "workspace-finturo-dev-nsure-01"
   location            = var.location
@@ -242,7 +290,7 @@ resource "azurerm_container_group" "cg-finturo-main-dev-nsure-01" {
   location            = var.location
   resource_group_name = var.resource_group_name
   ip_address_type     = "Public"
-  dns_name_label      = "nsure-sftp-dev"
+  dns_name_label      = "nsure-sftp-dev-01"
   os_type             = "Linux"
 
   container {

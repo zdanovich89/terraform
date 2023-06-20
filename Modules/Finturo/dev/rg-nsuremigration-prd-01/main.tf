@@ -16,7 +16,7 @@ resource "azurerm_public_ip" "vm-nsure-migration-1-ip" {
 }
 
 resource "azurerm_subnet" "nsure-migration-prd-1__default" {
-  name                 = "default"
+  name                 = "default1"
   virtual_network_name = "nsure-migration-prd-1-vnet"
   resource_group_name  = var.resource_group_name
   address_prefixes     = ["10.0.0.0/24"]
@@ -148,8 +148,8 @@ resource "azurerm_virtual_network" "nsure-migration-prd-1-vnet" {
   resource_group_name = var.resource_group_name
   address_space       = ["10.0.0.0/16", ]
   subnet {
-    name           = "default"
-    address_prefix = "10.0.0.0/24"
+    name           = "default1"
+    address_prefix = "10.0.1.0/28"
   }
 
   depends_on = [
