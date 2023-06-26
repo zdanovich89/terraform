@@ -31,6 +31,24 @@ resource "azurerm_storage_account" "st-crm-rad-nsure-01" {
     azurerm_resource_group.rg-crm-rad-01
   ]
 }
+
+resource "azurerm_app_configuration" "appconf-crm-rad-nsure-01" {
+  name                       = "appconf-crm-rad-nsure-01"
+  resource_group_name        = var.resource_group_name
+  location                   = var.location
+  sku                        = "standard"
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+
+
+  depends_on = [
+    azurerm_resource_group.rg-crm-rad-01
+  ]
+}
+
 resource "azurerm_storage_share" "quinstreetfileshare" {
   name                 = "quinstreetfileshare"
   storage_account_name = azurerm_storage_account.st-crm-rad-nsure-01.name
@@ -81,16 +99,33 @@ resource "azurerm_storage_share" "smartfinancialfileshare" {
 
 
 
+
+
 resource "azurerm_application_insights" "appi-crm-rad-nsure-01" {
   name                = "appi-crm-rad-nsure-01"
   location            = var.location
   resource_group_name = var.resource_group_name
+  workspace_id        = azurerm_log_analytics_workspace.law-crm-rad-nsure-01.id
   application_type    = "web"
 
   depends_on = [
-    azurerm_resource_group.rg-crm-rad-01
+    azurerm_resource_group.rg-crm-rad-01,
+    azurerm_log_analytics_workspace.law-crm-rad-nsure-01
   ]
 }
+
+resource "azurerm_log_analytics_workspace" "law-crm-rad-nsure-01" {
+  name                = "law-crm-rad-nsure-01"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+
+  depends_on = [
+    azurerm_resource_group.rg-crm-rad-01
+    ]
+}
+
 
 resource "azurerm_mssql_server" "sql-crm-rad-nsure-01" {
   name                         = "sql-crm-rad-nsure-01"
@@ -105,17 +140,6 @@ resource "azurerm_mssql_server" "sql-crm-rad-nsure-01" {
   depends_on = [
     azurerm_resource_group.rg-crm-rad-01
   ]
-}
-
-resource "azurerm_mssql_database" "sqldb-crm-master-rad-nsure-01" {
-  name      = "sqldb-crm-master-rad-nsure-01"
-  server_id = azurerm_mssql_server.sql-crm-rad-nsure-01.id
-
-  depends_on = [
-    azurerm_resource_group.rg-crm-rad-01,
-    azurerm_mssql_server.sql-crm-rad-nsure-01
-  ]
-
 }
 
 resource "azurerm_mssql_database" "sqldb-crm-main-rad-nsure-01" {
@@ -156,31 +180,7 @@ resource "azurerm_cosmosdb_account" "cosmos-crm-rad-nsure-01" {
   ]
 }
 
-resource "azurerm_cosmosdb_account" "cosmos-crm-analytic-rad-nsure-01" {
-  name                = "cosmos-crm-analytic-rad-nsure-01"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  kind                = "GlobalDocumentDB"
-  offer_type          = "Standard"
-  consistency_policy {
-    consistency_level       = "Session"
-    max_interval_in_seconds = "5"
-    max_staleness_prefix    = "100"
-  }
-  enable_automatic_failover = false
-  geo_location {
-    location          = "East US"
-    failover_priority = "0"
-  }
-  tags = {
-    "defaultExperience"       = "Core (SQL)"
-    "hidden-cosmos-mmspecial" = ""
-  }
 
-  depends_on = [
-    azurerm_resource_group.rg-crm-rad-01
-  ]
-}
 
 resource "azurerm_windows_web_app" "app_services_with_appi" {
 
