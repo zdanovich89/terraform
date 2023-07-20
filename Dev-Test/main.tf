@@ -20,7 +20,6 @@ provider "azurerm" {
 }
 
 
-
 #module "rg-finturo-tst-01" {
 #    source = "../Modules/Finturo/tst/rg-finturo-tst-01"
 #}

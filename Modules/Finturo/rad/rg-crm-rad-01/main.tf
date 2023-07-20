@@ -81,6 +81,22 @@ resource "azurerm_storage_share" "everquotefileshare" {
   ]
 }
 
+resource "azurerm_storage_share" "nsure" {
+  name                 = "nsure"
+  storage_account_name = azurerm_storage_account.st-crm-rad-nsure-01.name
+  quota                = 50
+
+  acl {
+    id = "everquotefileshare"
+    access_policy {
+      permissions = "rwdl"
+    }
+  }
+  depends_on = [
+    azurerm_storage_account.st-crm-rad-nsure-01
+  ]
+}
+
 resource "azurerm_storage_share" "smartfinancialfileshare" {
   name                 = "smartfinancialfileshare"
   storage_account_name = azurerm_storage_account.st-crm-rad-nsure-01.name
@@ -97,6 +113,61 @@ resource "azurerm_storage_share" "smartfinancialfileshare" {
   ]
 }
 
+
+resource "azurerm_storage_container" "crm-files" {
+
+  name                  = "crm-files"
+  storage_account_name  = azurerm_storage_account.st-crm-rad-nsure-01.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_storage_account.st-crm-rad-nsure-01
+  ]
+}
+
+resource "azurerm_storage_container" "email-attachments" {
+
+  name                  = "email-attachments"
+  storage_account_name  = azurerm_storage_account.st-crm-rad-nsure-01.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_storage_account.st-crm-rad-nsure-01
+  ]
+}
+
+resource "azurerm_storage_container" "persist-key-blob-container" {
+
+  name                  = "persist-key-blob-container"
+  storage_account_name  = azurerm_storage_account.st-crm-rad-nsure-01.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_storage_account.st-crm-rad-nsure-01
+  ]
+}
+
+resource "azurerm_storage_container" "quotation-logs" {
+
+  name                  = "quotation-logs"
+  storage_account_name  = azurerm_storage_account.st-crm-rad-nsure-01.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_storage_account.st-crm-rad-nsure-01
+  ]
+}
+
+resource "azurerm_storage_container" "user-files" {
+
+  name                  = "user-files"
+  storage_account_name  = azurerm_storage_account.st-crm-rad-nsure-01.name
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_storage_account.st-crm-rad-nsure-01
+  ]
+}
 
 
 
@@ -194,9 +265,20 @@ resource "azurerm_windows_web_app" "app_services_with_appi" {
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.appi-crm-rad-nsure-01.instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-crm-rad-nsure-01.connection_string
+    "AppConfig:Endpoint" = each.value.appconfig_endpoint
+    "AppConfig:TenantId" = each.value.appconfig_tenantid
+    "ASPNETCORE_ENVIRONMENT" = "RAD"
+  
+  }
+  
+
+  site_config {
+     application_stack {
+      current_stack = "dotnet"
+      dotnet_version = "v6.0"
+    }
   }
 
-  site_config {}
   identity {
     type = "SystemAssigned"
   }
@@ -218,9 +300,18 @@ resource "azurerm_windows_web_app" "app_services_without_appi" {
   service_plan_id     = azurerm_service_plan.plan-crm-rad-nsure-01.id
   https_only          = each.value.https_only
   app_settings = {
+    "AppConfig:Endpoint" = each.value.appconfig_endpoint
+    "AppConfig:TenantId" = each.value.appconfig_tenantid
+    "ASPNETCORE_ENVIRONMENT" = each.value.aspnetcore_env
   }
 
-  site_config {}
+  site_config {
+     application_stack  {
+      current_stack = "dotnet"
+      dotnet_version = "v6.0"
+      }
+
+  }
   identity {
     type = "SystemAssigned"
   }
@@ -244,6 +335,10 @@ resource "azurerm_windows_function_app" "function_apps" {
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.appi-crm-rad-nsure-01.instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi-crm-rad-nsure-01.connection_string
+    "AppConfig:Endpoint" = each.value.appconfig_endpoint
+    AZURE_FUNCTIONS_ENVIRONMENT = each.value.function_env
+    AzureWebJobsStorage = each.value.webjobsstorage
+    "AzureWebJobs.MarketingFunction.Disabled" = each.value.webjobsmarketingfunction
   }
 
   identity {
@@ -270,9 +365,9 @@ resource "azurerm_servicebus_namespace" "sb-crm-rad-nsure-01" {
   ]
 }
 
-resource "azurerm_servicebus_queue" "sb_queues" {
+resource "azurerm_servicebus_queue" "sb_queues_without_auth_rule" {
 
-  for_each = var.sb_queues
+  for_each = var.sb_queues_without_auth_rule
 
 
   name                                 = each.value.name
@@ -286,6 +381,35 @@ resource "azurerm_servicebus_queue" "sb_queues" {
     azurerm_resource_group.rg-crm-rad-01,
     azurerm_servicebus_namespace.sb-crm-rad-nsure-01
   ]
+}
+
+resource "azurerm_servicebus_queue" "sb_queues_with_auth_rule" {
+
+  for_each = var.sb_queues_with_auth_rule
+
+
+  name                                 = each.value.name
+  namespace_id                         = azurerm_servicebus_namespace.sb-crm-rad-nsure-01.id
+  enable_partitioning                  = each.value.enable_partitioning
+  enable_express                       = each.value.enable_express
+  requires_duplicate_detection         = each.value.requires_duplicate_detection
+  requires_session                     = each.value.requires_session
+  dead_lettering_on_message_expiration = each.value.dead_lettering_on_message_expiration
+  depends_on = [
+    azurerm_resource_group.rg-crm-rad-01,
+    azurerm_servicebus_namespace.sb-crm-rad-nsure-01
+  ]
+}
+
+resource "azurerm_servicebus_queue_authorization_rule" "sb-queues-authorization-rules" {
+  for_each = azurerm_servicebus_queue.sb_queues_with_auth_rule
+
+  name     = "SendAndListen"
+  queue_id = azurerm_servicebus_queue.sb_queues_with_auth_rule[each.key].id
+
+  listen = true
+  send   = true
+  manage = false
 }
 
 resource "azurerm_container_group" "cg-crm-main-rad-nsure-01" {
