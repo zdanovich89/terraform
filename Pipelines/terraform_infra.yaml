@@ -7,7 +7,7 @@ pool:
 steps:
 
 - powershell: |
-    Write-Host $(Build.ArtifactStagingDirectory)
+    Write-Host $(Build.ArtifactStagingDirectory)/
     # Get-ChildItem -Path $(Build.ArtifactStagingDirectory) -Recurse -Force        
     
 - task: TerraformInstaller@1
