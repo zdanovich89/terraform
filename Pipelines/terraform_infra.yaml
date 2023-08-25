@@ -34,6 +34,7 @@ steps:
   displayName: 'Terraform Plan'
   inputs:
     provider: 'azurerm'
+    workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
     command: 'plan'
     environmentServiceNameAzureRM: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
     commandOptions: '-out=tfplan'
@@ -42,6 +43,7 @@ steps:
   displayName: 'Terraform Apply'
   inputs:
     provider: 'azurerm'
+    workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
     command: 'apply'
     commandOptions: 'tfplan -auto-approve'
     environmentServiceNameAzureRM: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
