@@ -5,11 +5,6 @@ pool:
   vmImage: windows-latest
 
 steps:
-
-- powershell: |
-    Write-Host $(Build.ArtifactStagingDirectory)\
-    # Get-ChildItem -Path $(Build.ArtifactStagingDirectory) -Recurse -Force        
-    
 - task: TerraformInstaller@1
   displayName: 'Install Terraform'
   inputs:
