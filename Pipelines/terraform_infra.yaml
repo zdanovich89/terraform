@@ -10,8 +10,7 @@ steps:
     Write-Host "Show all folder content ArtifactStagingDirectory"
     Get-ChildItem -Path $(Build.ArtifactStagingDirectory)\*.* -Recurse -Force
     errorActionPreference: continue
-    displayName: 'PowerShell Script List folder structure'
-    continueOnError: true
+    displayName: 'PowerShell Script List folder structure'    
 
 - task: TerraformInstaller@1
   displayName: 'Install Terraform'
