@@ -21,7 +21,7 @@ steps:
   displayName: 'Terraform Init'
   inputs:
     provider: 'azurerm'
-    workingDirectory: '$(Build.SourcesDirectory)'    
+    workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'    
     command: 'init'
     backendServiceArm: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
     backendAzureRmResourceGroupName: 'rg-sharedresources-dev-01'
