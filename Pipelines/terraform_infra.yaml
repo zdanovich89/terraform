@@ -5,6 +5,13 @@ pool:
   vmImage: windows-latest
 
 steps:
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
+    scriptType: 'ps'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'Write-Host ''$(Build.SourcesDirectory)'''
 - task: TerraformInstaller@1
   displayName: 'Install Terraform'
   inputs:
