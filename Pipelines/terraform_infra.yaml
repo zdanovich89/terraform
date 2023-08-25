@@ -6,14 +6,12 @@ pool:
 
 steps:
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
-    scriptType: 'ps'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      Write-Host 'Listing all files in the build directory:'
-      Get-ChildItem -Path $(Build.SourcesDirectory) -Recurse
+- powershell: |
+    Write-Host "Show all folder content ArtifactStagingDirectory"
+    Get-ChildItem -Path $(Build.ArtifactStagingDirectory)\*.* -Recurse -Force
+    errorActionPreference: continue
+    displayName: 'PowerShell Script List folder structure'
+    continueOnError: true
 
 - task: TerraformInstaller@1
   displayName: 'Install Terraform'
