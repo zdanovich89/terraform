@@ -5,20 +5,22 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  - stage: Chechov_validate
+  - stage: TFSEC_validate
     jobs:
     - job: Compliance
-      displayName: 'Run Checkov to validate Terraform'
+      displayName: 'Run TFSEC to validate Terraform'
 
       steps:
       - script: |   
-          pip3 install checkov
+          curl -L -o tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
+          chmod +x tfsec
+          sudo mv tfsec /usr/local/bin/
         displayName: 'Get tools'
       
       - script:
-          checkov --directory '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
+          tfsec
         workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
-        displayName: 'Run Chechov'
+        displayName: 'Run TFSEC'
         continueOnError: true
 
   - stage: Deploy_Terraform
