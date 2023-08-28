@@ -2,25 +2,23 @@ trigger:
 - none
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 stages:
   - stage: Chechov_validate
     jobs:
     - job: Compliance
-      displayName: 'Run Terrascan to validate Terraform'
+      displayName: 'Run Checkov to validate Terraform'
 
       steps:
       - script: |   
-            curl --location https://github.com/accurics/terrascan/releases/download/v1.3.1/terrascan_1.3.1_Linux_x86_64.tar.gz --output terrascan.tar.gz
-            tar -xvf terrascan.tar.gz
-            sudo install terrascan /usr/local/bin  
+          pip3 install checkov
         displayName: 'Get tools'
       
       - script:
-          terrascan scan
+          checkov --directory '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
         workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
-        displayName: 'Run Terrascan'
+        displayName: 'Run Chechov'
         continueOnError: true
 
   - stage: Deploy_Terraform
