@@ -10,3 +10,8 @@ variable "location" {
   type    = string
   default = "eastus"
 }
+
+variable "application_type" {
+  type    = string
+  default = "ASP.NET web application"
+}
