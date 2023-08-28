@@ -16,8 +16,8 @@ stages:
         displayName: 'Get tools'
       
       - script:
-          checkov --directory '$(System.DefaultWorkingDirectory)/Infrastructure/rg-communicationhub-dev-01'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure/rg-communicationhub-dev-01'
+          checkov --directory '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
+        workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
         displayName: 'Run Chechov'
         continueOnError: true
 
