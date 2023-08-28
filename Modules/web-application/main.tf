@@ -5,6 +5,8 @@ resource "azurerm_windows_web_app" "windows_app" {
   service_plan_id     = var.service_plan_id
 
   site_config {
-    always_on = true
+    always_on                             = true
+    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.connection_string
   }
 }
