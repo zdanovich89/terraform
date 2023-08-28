@@ -27,14 +27,6 @@ module "resource_group" {
   location            = "eastus"
 }
 
-module "service_plan" {
-  source = "../../Modules/service-plan"
-
-  depends_on          = [module.resource_group]
-  resource_group_name = "rg-communicationhub-dev-01"
-  name                = "plan-commhub-dev-nsure-01"
-}
-
 module "app_service" {
   source = "../../Modules/web-application"
 
