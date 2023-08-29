@@ -1,13 +1,22 @@
 module "app_service" {
-  source = "../../Modules/web-application/"
+  source = "../../Modules/web-application"
 
   resource_group_name = "rg-communicationhub-dev-01"
   name                = "app-commhub-mainapi-dev-nsure-01"
   location            = "eastus"
   service_plan_id     = module.service_plan.service_plan_id
+  https_only          = false
 
   site_config = {
-    always_on = "false"
+    default_documents  = ["index.html"]
+    http2_enabled      = true
+    https_only         = true
+    websockets_enabled = true
+    always_on          = true
+    use_32_bit_worker  = false
+    current_stack      = "dotnet"
+    dotnet_version     = "v6.0"
+
   }
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY             = module.application_insights.application_insights_instrumentation_key
