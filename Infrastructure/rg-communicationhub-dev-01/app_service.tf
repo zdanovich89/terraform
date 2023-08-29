@@ -11,7 +11,7 @@ module "app_service" {
     default_documents  = ["index.html", "Default.htm", "Default.html", "Default.asp", "index.htm", "iisstart.htm", "default.aspx", "index.php", "hostingstart.html"]
     http2_enabled      = true
     websockets_enabled = true
-    always_on          = true
+    always_on          = false
     use_32_bit_worker  = false
     current_stack      = ".NET"
     dotnet_version     = "v6.0"
