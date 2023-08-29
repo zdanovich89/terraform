@@ -9,12 +9,14 @@ module "app_service" {
 
   site_config = {
     default_documents  = ["index.html", "Default.htm", "Default.html", "Default.asp", "index.htm", "iisstart.htm", "default.aspx", "index.php", "hostingstart.html"]
-    http2_enabled      = true
-    websockets_enabled = true
+    http2_enabled      = false
+    websockets_enabled = false
     always_on          = false
     use_32_bit_worker  = true
+    ftps_state         = "FtpsOnly"
     current_stack      = "dotnet"
     dotnet_version     = "v6.0"
+
 
   }
   app_settings = {

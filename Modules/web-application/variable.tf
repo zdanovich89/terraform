@@ -32,6 +32,7 @@ variable "site_config" {
     websockets_enabled = bool
     always_on          = bool
     use_32_bit_worker  = bool
+    ftps_state         = string
     current_stack      = string
     dotnet_version     = string
   })

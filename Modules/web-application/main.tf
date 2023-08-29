@@ -12,6 +12,7 @@ resource "azurerm_windows_web_app" "windows_app" {
     websockets_enabled = var.site_config.websockets_enabled
     always_on          = var.site_config.always_on
     use_32_bit_worker  = var.site_config.use_32_bit_worker
+    ftps_state         = var.site_config.ftps_state
     application_stack {
       current_stack  = var.site_config.current_stack
       dotnet_version = var.site_config.dotnet_version
