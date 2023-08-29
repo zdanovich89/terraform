@@ -19,3 +19,9 @@ variable "app_settings" {
   type    = map(string)
   default = {}
 }
+
+variable "site_config" {
+  type    = map(string)
+  default = {}
+}
+
