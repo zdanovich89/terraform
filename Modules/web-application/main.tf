@@ -5,8 +5,10 @@ resource "azurerm_windows_web_app" "windows_app" {
   service_plan_id     = var.service_plan_id
 
   site_config {
-    always_on                             = true
-    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
+    always_on = true
+    # APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
+    # APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
+    APPINSIGHTS_INSTRUMENTATIONKEY        = var.appinsights_instrumentationkey
+    APPLICATIONINSIGHTS_CONNECTION_STRING = var.application_insights_connection_string
   }
 }
