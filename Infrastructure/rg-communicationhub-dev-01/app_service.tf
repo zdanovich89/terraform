@@ -6,8 +6,8 @@ module "app_service" {
   location            = "eastus"
   service_plan_id     = module.service_plan.service_plan_id
 
-  app_settings = {
-    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
-  }
+  # app_settings = {
+  #   APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
+  #   APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
+  # }
 }
