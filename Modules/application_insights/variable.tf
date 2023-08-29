@@ -16,7 +16,7 @@ variable "application_type" {
   default = "ASP.NET web application"
 }
 
-# variable "app_settings" {
-#   type    = map(string)
-#   default = {}
-# }
+variable "app_settings" {
+  type    = map(string)
+  default = {}
+}
