@@ -4,9 +4,9 @@ resource "azurerm_windows_web_app" "windows_app" {
   location            = var.location
   service_plan_id     = var.service_plan_id
 
-  # site_config {
-  #   always_on = true
-  # }
+  site_config {
+    always_on = true
+  }
 
   app_settings = var.app_settings
 
