@@ -8,9 +8,8 @@ module "app_service" {
   https_only          = false
 
   site_config = {
-    default_documents  = ["index.html"]
+    default_documents  = ["index.html", "Default.htm", "Default.html", "Default.asp", "index.htm", "iisstart.htm", "default.aspx", "index.php", "hostingstart.html"]
     http2_enabled      = true
-    https_only         = true
     websockets_enabled = true
     always_on          = true
     use_32_bit_worker  = false
@@ -26,6 +25,5 @@ module "app_service" {
     WEBSITE_ENABLE_SYNC_UPDATE_SITE            = "true"
     WEBSITE_RUN_FROM_PACKAGE                   = "1"
     XDT_MicrosoftApplicationInsights_Mode      = "Recommended"
-
   }
 }
