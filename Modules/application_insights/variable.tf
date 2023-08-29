@@ -16,10 +16,7 @@ variable "application_type" {
   default = "ASP.NET web application"
 }
 
-# variable "APPINSIGHTS_INSTRUMENTATIONKEY" {
-#   type = string
-# }
-
-# variable "APPLICATIONINSIGHTS_CONNECTION_STRING" {
-#   type = string
-# }
+variable "app_settings" {
+  type    = map(string)
+  default = {}
+}
