@@ -9,5 +9,10 @@ module "app_service" {
     APPINSIGHTS_INSTRUMENTATIONKEY             = module.application_insights.application_insights_instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING      = module.application_insights.application_insights_connection_string
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
+    ASPNETCORE_ENVIRONMENT                     = "Development"
+    WEBSITE_ENABLE_SYNC_UPDATE_SITE            = "true"
+    WEBSITE_RUN_FROM_PACKAGE                   = "1"
+    XDT_MicrosoftApplicationInsights_Mode      = "Recommended"
+
   }
 }
