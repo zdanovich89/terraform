@@ -8,6 +8,6 @@ resource "azurerm_windows_web_app" "windows_app" {
   #   always_on = true
   # }
 
-  # app_settings = var.app_settings
+  app_settings = var.app_settings
 
 }
