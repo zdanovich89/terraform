@@ -13,7 +13,7 @@ module "app_service" {
     websockets_enabled = true
     always_on          = false
     use_32_bit_worker  = true
-    current_stack      = ".NET"
+    current_stack      = "dotnet"
     dotnet_version     = "v6.0"
 
   }
