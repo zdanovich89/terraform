@@ -13,10 +13,6 @@ variable "location" {
 
 variable "application_type" {
   type    = string
-  default = "ASP.NET web application"
+  default = "web"
 }
 
-variable "app_settings" {
-  type    = map(string)
-  default = {}
-}

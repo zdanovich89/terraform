@@ -14,3 +14,8 @@ variable "location" {
 variable "service_plan_id" {
   type = string
 }
+
+variable "app_settings" {
+  type    = map(string)
+  default = {}
+}
