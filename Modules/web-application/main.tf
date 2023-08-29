@@ -3,13 +3,8 @@ resource "azurerm_windows_web_app" "windows_app" {
   resource_group_name = var.resource_group_name
   location            = var.location
   service_plan_id     = var.service_plan_id
-  # app_settings        = var.app_settings
+  app_settings        = var.app_settings
   site_config {
     always_on = true
-  }
-
-  app_settings = {
-    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
   }
 }
