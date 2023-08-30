@@ -5,6 +5,9 @@ resource "azurerm_windows_web_app" "windows_app" {
   service_plan_id     = var.service_plan_id
   https_only          = var.https_only
   app_settings        = var.app_settings
+  identity {
+    type = var.identity
+  }
 
   site_config {
     default_documents  = var.site_config.default_documents

@@ -38,4 +38,9 @@ variable "site_config" {
   })
 }
 
+variable "identity" {
+  type    = string
+  default = "SystemAssigned"
+}
+
 
