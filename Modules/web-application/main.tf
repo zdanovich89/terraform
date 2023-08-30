@@ -9,16 +9,19 @@ resource "azurerm_windows_web_app" "windows_app" {
     type = var.identity
   }
 
-  site_config {
-    default_documents  = var.site_config.default_documents
-    http2_enabled      = var.site_config.http2_enabled
-    websockets_enabled = var.site_config.websockets_enabled
-    always_on          = var.site_config.always_on
-    use_32_bit_worker  = var.site_config.use_32_bit_worker
-    ftps_state         = var.site_config.ftps_state
-    application_stack {
-      current_stack  = var.site_config.current_stack
-      dotnet_version = var.site_config.dotnet_version
+  dynamic "site_config" {
+    for_each = var.site_config
+    content {
+      default_documents  = site_config.value["default_documents"]
+      http2_enabled      = site_config.value["http2_enabled"]
+      websockets_enabled = site_config.value["websockets_enabled"]
+      always_on          = site_config.value["always_on"]
+      use_32_bit_worker  = site_config.value["use_32_bit_worker"]
+      ftps_state         = site_config.value["ftps_state"]
+      application_stack {
+        current_stack  = site_config.value["current_stack"]
+        dotnet_version = site_config.value["dotnet_version"]
+      }
     }
   }
 }
