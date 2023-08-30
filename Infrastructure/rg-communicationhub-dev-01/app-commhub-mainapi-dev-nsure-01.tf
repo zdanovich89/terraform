@@ -1,5 +1,5 @@
 module "app_service" {
-  source = "../../Modules/web-application"
+  source = "../../Modules/web_application"
 
   resource_group_name = "rg-communicationhub-dev-01"
   name                = "app-commhub-mainapi-dev-nsure-01"
@@ -8,8 +8,13 @@ module "app_service" {
   https_only          = false
 
   app_settings = {
-    APPINSIGHTS_INSTRUMENTATIONKEY        = module.application_insights.application_insights_instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights_connection_string
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE       = "true"
+    APPINSIGHTS_INSTRUMENTATIONKEY             = module.application_insights.application_insights_instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING      = module.application_insights.application_insights_connection_string
+    ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
+    ASPNETCORE_ENVIRONMENT                     = "Development"
+    WEBSITE_ENABLE_SYNC_UPDATE_SITE            = "true"
+    WEBSITE_RUN_FROM_PACKAGE                   = "1"
+    XDT_MicrosoftApplicationInsights_Mode      = "Recommended"
+    https_only                                 = "true"
   }
 }

@@ -25,7 +25,6 @@ variable "app_settings" {
   default = {
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
     ASPNETCORE_ENVIRONMENT                     = "Development"
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE            = "true"
     WEBSITE_RUN_FROM_PACKAGE                   = "1"
     XDT_MicrosoftApplicationInsights_Mode      = "Recommended"
     https_only                                 = "true"

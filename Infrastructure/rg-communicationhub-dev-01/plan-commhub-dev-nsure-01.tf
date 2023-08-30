@@ -1,5 +1,5 @@
 module "service_plan" {
-  source = "../../Modules/service-plan"
+  source = "../../Modules/service_plan"
 
   depends_on          = [module.resource_group]
   name                = "plan-commhub-dev-nsure-01"
