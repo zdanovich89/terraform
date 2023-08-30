@@ -27,5 +27,6 @@ module "app_service" {
     WEBSITE_ENABLE_SYNC_UPDATE_SITE            = "true"
     WEBSITE_RUN_FROM_PACKAGE                   = "1"
     XDT_MicrosoftApplicationInsights_Mode      = "Recommended"
+    https_only                                 = "true"
   }
 }
