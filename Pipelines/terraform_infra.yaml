@@ -19,7 +19,7 @@ stages:
       
       - script:
           tfsec
-        workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
+        workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/DEV/rg-communicationhub-dev-01'
         displayName: 'Run TFSEC'
         continueOnError: true
 
@@ -40,7 +40,7 @@ stages:
         displayName: 'Terraform Init'
         inputs:
           provider: 'azurerm'
-          workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'    
+          workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/DEV/rg-communicationhub-dev-01'    
           command: 'init'
           backendServiceArm: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
           backendAzureRmResourceGroupName: 'rg-sharedresources-dev-01'
@@ -58,7 +58,7 @@ stages:
         displayName: 'Terraform Plan'
         inputs:
           provider: 'azurerm'
-          workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
+          workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/DEV/rg-communicationhub-dev-01'
           command: 'plan'
           environmentServiceNameAzureRM: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
           commandOptions: '-out=tfplan'
@@ -67,7 +67,7 @@ stages:
         displayName: 'Terraform Apply'
         inputs:
           provider: 'azurerm'
-          workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/rg-communicationhub-dev-01'
+          workingDirectory: '$(Build.SourcesDirectory)/Infrastructure/DEV/rg-communicationhub-dev-01'
           command: 'apply'    
           environmentServiceNameAzureRM: 'Azure subscription 1 (98134baf-b89e-45c5-9c70-1c40e593e6db)'
 
